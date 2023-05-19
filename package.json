@@ -24,7 +24,7 @@
   "homepage": "https://github.com/rorkflash/ejs-webpack-loader",
   "dependencies": {
     "html-minifier": "^3",
-    "loader-utils": "^0.2.7",
+    "loader-utils": "^1.4.2",
     "merge": "^2.1.1",
     "uglify-js": "~2.6.1"
   },

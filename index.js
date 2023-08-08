@@ -1,16 +1,29 @@
-var ejs = require('ejs'),
-  UglifyJS = require('uglify-js'),
-  utils = require('loader-utils'),
-  path = require('path'),
-  htmlmin = require('html-minifier'),
-  merge = require('merge');
+var ejs = require("ejs"),
+  UglifyJS = require("uglify-js"),
+  utils = require("loader-utils"),
+  path = require("path"),
+  htmlmin = require("html-minifier"),
+  merge = require("merge");
 
-
-module.exports = function(source) {
+module.exports = function (source) {
   this.cacheable && this.cacheable();
-  var query = typeof this.query === 'object' ? this.query : utils.parseQuery(this.query);
-  var _options = typeof this.options === 'object' ? this.options['ejs-compiled-loader'] || {} : {};
-  _options = typeof utils.getOptions === 'function' ? merge(utils.getOptions(this), _options) : _options;
+  var query;
+  if (!this.query || !this.query.length) {
+    query = {};
+  } else {
+    query =
+      typeof this.query === "object"
+        ? this.query
+        : utils.parseQuery(this.query);
+  }
+  var _options =
+    typeof this.options === "object"
+      ? this.options["ejs-compiled-loader"] || {}
+      : {};
+  _options =
+    typeof utils.getOptions === "function"
+      ? merge(utils.getOptions(this), _options)
+      : _options;
   var opts = merge(_options, query);
 
   if (opts.client == undefined) {
@@ -27,21 +40,21 @@ module.exports = function(source) {
   opts.filename = path.relative(process.cwd(), this.resourcePath);
 
   if (opts.htmlmin) {
-    source = htmlmin.minify(source, opts['htmlminOptions'] || {});
+    source = htmlmin.minify(source, opts["htmlminOptions"] || {});
   }
 
   var template = ejs.compile(source, opts);
-  template.dependencies.forEach(this.dependency.bind(this));
+  // template.dependencies.forEach(this.dependency.bind(this));
 
   // Beautify javascript code
   if (this.loaders.length > 1) {
-    template = JSON.stringify(template((opts['data'] || {})));
+    template = JSON.stringify(template(opts["data"] || {}));
   } else {
     if (!this.minimize && opts.beautify !== false) {
       var ast = UglifyJS.parse(template.toString());
       ast.figure_out_scope();
-      template = ast.print_to_string({beautify: true});
+      template = ast.print_to_string({ beautify: true });
     }
   }
-  return 'module.exports = ' + template;
+  return "module.exports = " + template;
 };
